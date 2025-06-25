@@ -5,19 +5,21 @@ const ManageReports = () => {
   const [submittedReports, setSubmittedReports] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterApproved, setFilterApproved] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const token = localStorage.getItem('token');
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
+  // Fetch all reports
   const fetchReports = async () => {
     try {
       const response = await axios.get(`${API_BASE}/reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSubmittedReports(response.data);
+      setError('');
     } catch (err) {
       console.error('Fetch error:', err);
-      setError('Failed to fetch reports');
+      setError('❌ Failed to fetch reports.');
     }
   };
 
@@ -32,40 +34,42 @@ const ManageReports = () => {
       await axios.put(`${API_BASE}/reports/${id}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      alert('✅ Report approved successfully!');
       fetchReports();
     } catch (err) {
       console.error('Approve error:', err);
-      setError('Error approving report');
+      setError('❌ Error approving report.');
     }
   };
 
   const handleRejectReport = async (id) => {
-    const reason = window.prompt('Enter reason for rejection:');
+    const reason = window.prompt('Enter the reason for rejecting this report:');
     if (!reason) return;
 
     try {
       await axios.put(`${API_BASE}/reports/${id}/reject`, { reason }, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      alert('⚠️ Report rejected and student notified.');
       fetchReports();
     } catch (err) {
       console.error('Reject error:', err);
-      setError('Error rejecting report');
+      setError('❌ Error rejecting report.');
     }
   };
 
   const handleDeleteReport = async (id) => {
-    const confirm = window.confirm('Are you sure you want to delete this report?');
-    if (!confirm) return;
+    if (!window.confirm('Are you sure you want to delete this report?')) return;
 
     try {
       await axios.delete(`${API_BASE}/reports/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      alert('🗑 Report deleted.');
       fetchReports();
     } catch (err) {
       console.error('Delete error:', err);
-      setError('Error deleting report');
+      setError('❌ Error deleting report.');
     }
   };
 
@@ -84,16 +88,18 @@ const ManageReports = () => {
       link.click();
       link.remove();
 
+      alert('🎓 Certificate generated and sent to student.');
       fetchReports();
     } catch (err) {
       console.error('Certificate generation error:', err);
-      setError('Error generating certificate');
+      const message = err.response?.data?.message || '❌ Error generating certificate.';
+      setError(message);
     }
   };
 
   const filteredReports = submittedReports.filter((report) =>
-    (report.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.projectTitle.toLowerCase().includes(searchQuery.toLowerCase())) &&
+    (report.studentName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      report.projectTitle?.toLowerCase().includes(searchQuery.toLowerCase())) &&
     (filterApproved === null || report.isApproved === filterApproved)
   );
 
@@ -129,22 +135,28 @@ const ManageReports = () => {
 
       {/* Reports List */}
       {filteredReports.length > 0 ? (
-        <section className="p-6 bg-white rounded-lg shadow mt-6">
+        <section className="p-6 bg-white rounded-lg shadow">
           <h3 className="text-xl font-semibold mb-4">Submitted Reports</h3>
           <ul className="space-y-4">
             {filteredReports.map((report) => (
-              <li key={report._id} className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4">
+              <li
+                key={report._id}
+                className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4"
+              >
                 <div className="text-gray-700">
                   <p className="font-semibold">{report.studentName} - {report.projectTitle}</p>
                   <p className="text-sm text-gray-500">
                     {new Date(report.submissionDate).toLocaleDateString()} | {report.studentEmail}
                   </p>
-                  <p className={`text-sm font-bold mt-1 ${report.isApproved ? 'text-green-600' : report.rejected ? 'text-red-600' : 'text-yellow-600'}`}>
+                  <p className={`text-sm font-bold mt-1 ${
+                    report.isApproved ? 'text-green-600' :
+                    report.rejected ? 'text-red-600' : 'text-yellow-600'
+                  }`}>
                     {report.isApproved
                       ? '✅ Approved'
                       : report.rejected
                       ? `❌ Rejected: ${report.rejectionReason}`
-                      : '⏳ Pending'}
+                      : '⏳ Pending Approval'}
                   </p>
                 </div>
 
@@ -203,7 +215,7 @@ const ManageReports = () => {
         <p className="text-gray-600">No reports found.</p>
       )}
 
-      {error && <p className="text-red-600 mt-6">{error}</p>}
+      {error && <p className="text-red-600 mt-6 font-medium">{error}</p>}
     </div>
   );
 };
