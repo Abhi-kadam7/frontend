@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { FaUser, FaLock } from 'react-icons/fa';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { FaUserShield, FaUserGraduate, FaChalkboardTeacher, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const roleIcons = {
-  Admin: '🛡️',
-  Student: '🎓',
-  Teacher: '📚',
+  Admin: <FaUserShield className="text-2xl text-white group-hover:scale-110 transition-transform" />,
+  Student: <FaUserGraduate className="text-2xl text-white group-hover:scale-110 transition-transform" />,
+  Teacher: <FaChalkboardTeacher className="text-2xl text-white group-hover:scale-110 transition-transform" />,
 };
 
 const LoginPage = () => {
   const [selectedRole, setSelectedRole] = useState(null);
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -20,13 +21,15 @@ const LoginPage = () => {
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    if (!selectedRole) return setError('⚠ Please select a role');
-    if (!credentials.username || !credentials.password) {
-      return setError('⚠ Please enter both username and password');
-    }
+    if (!selectedRole) return setError("⚠ Please select a role");
+    if (!credentials.username || !credentials.password)
+      return setError("⚠ Please enter both username and password");
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/login`, {
@@ -35,58 +38,63 @@ const LoginPage = () => {
         role: selectedRole.toLowerCase(),
       });
 
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem("token", response.data.token);
       setError(null);
 
       switch (selectedRole) {
-        case 'Admin':
-          navigate('/admin');
+        case "Admin":
+          navigate("/admin");
           break;
-        case 'Student':
-          navigate('/student');
+        case "Student":
+          navigate("/student");
           break;
-        case 'Teacher':
-          navigate('/teacher');
+        case "Teacher":
+          navigate("/teacher");
           break;
         default:
-          setError('Unknown role');
+          setError("Unknown role");
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || "Login failed. Please try again.");
     }
 
-    setCredentials({ username: '', password: '' });
+    setCredentials({ username: "", password: "" });
   };
 
   const renderLoginForm = () => (
     <form onSubmit={handleLogin} className="space-y-4 animate-fade-in">
+      <input
+        type="text"
+        name="username"
+        placeholder={`${selectedRole} Username`}
+        value={credentials.username}
+        onChange={handleChange}
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+
       <div className="relative">
-        <FaUser className="absolute top-3 left-3 text-gray-400" />
         <input
-          type="text"
-          name="username"
-          placeholder={`${selectedRole} Username`}
-          value={credentials.username}
-          onChange={handleChange}
-          className="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
-        />
-      </div>
-      <div className="relative">
-        <FaLock className="absolute top-3 left-3 text-gray-400" />
-        <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           name="password"
           placeholder="Password"
           value={credentials.password}
           onChange={handleChange}
-          className="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
+          className="w-full p-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
+        <span
+          onClick={togglePasswordVisibility}
+          className="absolute top-3 right-3 cursor-pointer text-gray-600 hover:text-indigo-600"
+          title={showPassword ? "Hide Password" : "Show Password"}
+        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
       </div>
+
       <button
         type="submit"
         className="w-full py-2 font-semibold text-white bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg shadow hover:scale-105 transform transition duration-300"
       >
-        {roleIcons[selectedRole]} Login as {selectedRole}
+        Login as {selectedRole}
       </button>
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
     </form>
@@ -100,43 +108,36 @@ const LoginPage = () => {
           "url('https://media.getmyuni.com/azure/college-images-test/nanasaheb-mahadik-college-of-engineering-nmce-sangli/2079edd702dc4d77a028f45677854a84.jpeg')",
       }}
     >
-      <div className="w-full max-w-md md:max-w-lg p-8 md:p-10 bg-white/20 backdrop-blur-lg rounded-xl shadow-2xl animate-slide-in-up">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 drop-shadow-sm">
-            Project Report Submission System
-          </h2>
-          <p className="text-gray-800 text-sm mt-1">Select your role to log in</p>
-        </div>
+      <div className="w-full max-w-md p-6 space-y-6 bg-white/20 backdrop-blur-md rounded-xl shadow-2xl animate-slide-in-up">
+        <h2 className="text-3xl font-bold text-center text-gray-800">Project Report Submission System</h2>
+        <p className="text-center text-gray-900">Select your role to log in</p>
 
-        {/* Role Selection */}
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
-          {['Admin', 'Student', 'Teacher'].map((role) => (
-            <div key={role} className="relative group w-28">
-              <button
-                title={`Login as ${role}`}
-                onClick={() => setSelectedRole(role)}
-                className={`w-full px-4 py-3 font-semibold text-white rounded-lg flex items-center justify-center gap-2 text-sm transition-all duration-300 transform shadow-lg hover:scale-105 ${
-                  selectedRole === role
-                    ? 'bg-indigo-700 scale-110'
-                    : role === 'Student'
-                    ? 'bg-green-500 hover:bg-green-600'
-                    : role === 'Teacher'
-                    ? 'bg-yellow-500 hover:bg-yellow-600'
-                    : 'bg-indigo-500 hover:bg-indigo-600'
-                }`}
-              >
-                <span className="text-xl animate-bounce">{roleIcons[role]}</span>
-                {role}
-              </button>
-            </div>
+        {/* Role buttons with icons and tooltips */}
+        <div className="flex justify-between gap-3">
+          {["Admin", "Student", "Teacher"].map((role) => (
+            <button
+              key={role}
+              onClick={() => setSelectedRole(role)}
+              title={`Login as ${role}`}
+              className={`group flex-1 flex flex-col items-center px-4 py-2 font-semibold text-white rounded-xl transition-all duration-300 ${
+                selectedRole === role
+                  ? "bg-indigo-700 scale-105"
+                  : role === "Student"
+                  ? "bg-green-500 hover:bg-green-600"
+                  : role === "Teacher"
+                  ? "bg-yellow-500 hover:bg-yellow-600"
+                  : "bg-indigo-500 hover:bg-indigo-600"
+              }`}
+            >
+              <div>{roleIcons[role]}</div>
+              <span className="text-sm mt-1">{role}</span>
+            </button>
           ))}
         </div>
 
         {selectedRole && (
-          <div className="animate-fade-in">
-            <h3 className="text-lg font-semibold text-center text-indigo-600 mb-4">
-              {roleIcons[selectedRole]} {selectedRole} Login
-            </h3>
+          <div className="pt-4 animate-fade-in">
+            <h3 className="text-xl font-semibold text-center text-indigo-600">{selectedRole} Login</h3>
             {renderLoginForm()}
           </div>
         )}
