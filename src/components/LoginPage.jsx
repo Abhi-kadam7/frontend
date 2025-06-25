@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const roleIcons = {
+  Admin: '🛡️',
+  Student: '🎓',
+  Teacher: '📚',
+};
+
 const LoginPage = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -52,7 +58,7 @@ const LoginPage = () => {
   };
 
   const renderLoginForm = () => (
-    <form onSubmit={handleLogin} className="space-y-4 animate-fade-in w-full">
+    <form onSubmit={handleLogin} className="space-y-4 animate-fade-in">
       <input
         type="text"
         name="username"
@@ -73,7 +79,7 @@ const LoginPage = () => {
         type="submit"
         className="w-full py-2 font-semibold text-white bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg shadow hover:scale-105 transform transition duration-300"
       >
-        Login as {selectedRole}
+        {roleIcons[selectedRole]} Login as {selectedRole}
       </button>
       {error && <p className="text-red-500 text-sm text-center">{error}</p>}
     </form>
@@ -81,41 +87,52 @@ const LoginPage = () => {
 
   return (
     <div
-      className="flex items-center justify-center min-h-screen px-4 py-8 bg-cover bg-center"
+      className="flex items-center justify-center min-h-screen bg-cover bg-center px-4"
       style={{
         backgroundImage:
           "url('https://media.getmyuni.com/azure/college-images-test/nanasaheb-mahadik-college-of-engineering-nmce-sangli/2079edd702dc4d77a028f45677854a84.jpeg')",
       }}
     >
-      <div className="w-full max-w-md p-8 space-y-6 bg-white/20 backdrop-blur-lg rounded-xl shadow-xl animate-slide-in-up">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white/20 backdrop-blur-md rounded-xl shadow-2xl animate-slide-in-up">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 drop-shadow-md">Project Report Submission</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 drop-shadow-sm">
+            Project Report Submission System
+          </h2>
           <p className="text-gray-800 text-sm mt-1">Select your role to log in</p>
         </div>
 
+        {/* Role Buttons with Icons + Tooltip + Animation */}
         <div className="flex justify-between gap-3">
           {['Admin', 'Student', 'Teacher'].map((role) => (
-            <button
+            <div
               key={role}
-              onClick={() => setSelectedRole(role)}
-              className={`flex-1 px-4 py-2 font-semibold text-white rounded-full transition-all duration-300 shadow ${
-                selectedRole === role
-                  ? 'bg-indigo-700 scale-105'
-                  : role === 'Student'
-                  ? 'bg-green-500 hover:bg-green-600'
-                  : role === 'Teacher'
-                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                  : 'bg-indigo-500 hover:bg-indigo-600'
-              }`}
+              className="relative group w-full flex justify-center"
+              title={`Login as ${role}`}
             >
-              {role}
-            </button>
+              <button
+                onClick={() => setSelectedRole(role)}
+                className={`flex-1 w-full px-4 py-2 font-semibold text-white rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow transform hover:scale-105 hover:rotate-1 ${
+                  selectedRole === role
+                    ? 'bg-indigo-700 scale-110 shadow-lg'
+                    : role === 'Student'
+                    ? 'bg-green-500 hover:bg-green-600'
+                    : role === 'Teacher'
+                    ? 'bg-yellow-500 hover:bg-yellow-600'
+                    : 'bg-indigo-500 hover:bg-indigo-600'
+                }`}
+              >
+                <span className="text-xl animate-bounce">{roleIcons[role]}</span>
+                <span>{role}</span>
+              </button>
+            </div>
           ))}
         </div>
 
         {selectedRole && (
-          <div className="pt-4 animate-fade-in w-full">
-            <h3 className="text-xl font-semibold text-center text-indigo-600">{selectedRole} Login</h3>
+          <div className="pt-4 animate-fade-in">
+            <h3 className="text-xl font-semibold text-center text-indigo-600">
+              {roleIcons[selectedRole]} {selectedRole} Login
+            </h3>
             {renderLoginForm()}
           </div>
         )}
