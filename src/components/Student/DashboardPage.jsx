@@ -27,7 +27,7 @@ const DashboardPage = () => {
 
   const fetchReports = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/my-reports`, {
+     const res = await axios.get(`${API_BASE}/reports/my-reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSubmittedReports(res.data || []);
