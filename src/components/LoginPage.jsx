@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FaUser, FaLock } from 'react-icons/fa';
 
 const roleIcons = {
   Admin: '🛡️',
@@ -59,22 +60,28 @@ const LoginPage = () => {
 
   const renderLoginForm = () => (
     <form onSubmit={handleLogin} className="space-y-4 animate-fade-in">
-      <input
-        type="text"
-        name="username"
-        placeholder={`${selectedRole} Username`}
-        value={credentials.username}
-        onChange={handleChange}
-        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={credentials.password}
-        onChange={handleChange}
-        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
-      />
+      <div className="relative">
+        <FaUser className="absolute top-3 left-3 text-gray-400" />
+        <input
+          type="text"
+          name="username"
+          placeholder={`${selectedRole} Username`}
+          value={credentials.username}
+          onChange={handleChange}
+          className="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
+        />
+      </div>
+      <div className="relative">
+        <FaLock className="absolute top-3 left-3 text-gray-400" />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={credentials.password}
+          onChange={handleChange}
+          className="w-full pl-10 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
+        />
+      </div>
       <button
         type="submit"
         className="w-full py-2 font-semibold text-white bg-gradient-to-r from-indigo-500 to-blue-500 rounded-lg shadow hover:scale-105 transform transition duration-300"
@@ -93,27 +100,24 @@ const LoginPage = () => {
           "url('https://media.getmyuni.com/azure/college-images-test/nanasaheb-mahadik-college-of-engineering-nmce-sangli/2079edd702dc4d77a028f45677854a84.jpeg')",
       }}
     >
-      <div className="w-full max-w-md p-8 space-y-6 bg-white/20 backdrop-blur-md rounded-xl shadow-2xl animate-slide-in-up">
-        <div className="text-center">
+      <div className="w-full max-w-md md:max-w-lg p-8 md:p-10 bg-white/20 backdrop-blur-lg rounded-xl shadow-2xl animate-slide-in-up">
+        <div className="text-center mb-6">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 drop-shadow-sm">
             Project Report Submission System
           </h2>
           <p className="text-gray-800 text-sm mt-1">Select your role to log in</p>
         </div>
 
-        {/* Role Buttons with Icons + Tooltip + Animation */}
-        <div className="flex justify-between gap-3">
+        {/* Role Selection */}
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
           {['Admin', 'Student', 'Teacher'].map((role) => (
-            <div
-              key={role}
-              className="relative group w-full flex justify-center"
-              title={`Login as ${role}`}
-            >
+            <div key={role} className="relative group w-28">
               <button
+                title={`Login as ${role}`}
                 onClick={() => setSelectedRole(role)}
-                className={`flex-1 w-full px-4 py-2 font-semibold text-white rounded-full flex items-center justify-center gap-2 transition-all duration-300 shadow transform hover:scale-105 hover:rotate-1 ${
+                className={`w-full px-4 py-3 font-semibold text-white rounded-lg flex items-center justify-center gap-2 text-sm transition-all duration-300 transform shadow-lg hover:scale-105 ${
                   selectedRole === role
-                    ? 'bg-indigo-700 scale-110 shadow-lg'
+                    ? 'bg-indigo-700 scale-110'
                     : role === 'Student'
                     ? 'bg-green-500 hover:bg-green-600'
                     : role === 'Teacher'
@@ -122,15 +126,15 @@ const LoginPage = () => {
                 }`}
               >
                 <span className="text-xl animate-bounce">{roleIcons[role]}</span>
-                <span>{role}</span>
+                {role}
               </button>
             </div>
           ))}
         </div>
 
         {selectedRole && (
-          <div className="pt-4 animate-fade-in">
-            <h3 className="text-xl font-semibold text-center text-indigo-600">
+          <div className="animate-fade-in">
+            <h3 className="text-lg font-semibold text-center text-indigo-600 mb-4">
               {roleIcons[selectedRole]} {selectedRole} Login
             </h3>
             {renderLoginForm()}
