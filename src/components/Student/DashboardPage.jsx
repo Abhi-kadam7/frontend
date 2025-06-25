@@ -63,7 +63,7 @@ const DashboardPage = () => {
     form.append('report', reportFile);
 
     try {
-      await axios.post(`${API_BASE}/submit-report`, form, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/reports/submit-report`, form, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
