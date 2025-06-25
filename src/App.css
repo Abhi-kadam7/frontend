@@ -1,0 +1,14 @@
+/* index.css */
+html {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+html.dark {
+  background-color: #1a202c; /* Dark theme background */
+  color: #f0f0f0; /* Dark theme text color */
+}
+
+html:not(.dark) {
+  background-color: #f7fafc; /* Light theme background */
+  color: #1a202c; /* Light theme text color */
+}
