@@ -9,11 +9,12 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = localStorage.getItem('token');
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/reports', {
+        const response = await axios.get(`${API_BASE}/reports`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setReports(response.data);
@@ -43,7 +44,7 @@ const Reports = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this report?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/reports/${id}`, {
+        await axios.delete(`${API_BASE}/reports/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setReports((prev) => prev.filter((r) => r._id !== id));
@@ -55,7 +56,7 @@ const Reports = () => {
 
   const handleApprove = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/reports/${id}/approve`, {}, {
+      await axios.put(`${API_BASE}/reports/${id}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setReports((prev) =>
@@ -74,7 +75,7 @@ const Reports = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/reports/${id}/reject`,
+        `${API_BASE}/reports/${id}/reject`,
         { reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -93,7 +94,7 @@ const Reports = () => {
   const handleGenerateCertificate = async (id) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/reports/${id}/certificate`,
+        `${API_BASE}/reports/${id}/certificate`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -167,7 +168,7 @@ const Reports = () => {
                     </td>
                     <td className="py-2 px-4 space-x-2">
                       <a
-                        href={`http://localhost:5000/api/reports/${report._id}/pdf`}
+                        href={`${API_BASE}/reports/${report._id}/pdf`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700"
