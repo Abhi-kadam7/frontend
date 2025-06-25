@@ -1,12 +1,24 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaUserShield, FaUserGraduate, FaChalkboardTeacher, FaEye, FaEyeSlash } from "react-icons/fa";
+import {
+  FaUserShield,
+  FaUserGraduate,
+  FaChalkboardTeacher,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
 
 const roleIcons = {
-  Admin: <FaUserShield className="text-2xl text-white group-hover:scale-110 transition-transform" />,
-  Student: <FaUserGraduate className="text-2xl text-white group-hover:scale-110 transition-transform" />,
-  Teacher: <FaChalkboardTeacher className="text-2xl text-white group-hover:scale-110 transition-transform" />,
+  Admin: (
+    <FaUserShield className="text-2xl text-white group-hover:scale-110 transition-transform" />
+  ),
+  Student: (
+    <FaUserGraduate className="text-2xl text-white group-hover:scale-110 transition-transform" />
+  ),
+  Teacher: (
+    <FaChalkboardTeacher className="text-2xl text-white group-hover:scale-110 transition-transform" />
+  ),
 };
 
 const LoginPage = () => {
@@ -32,11 +44,14 @@ const LoginPage = () => {
       return setError("⚠ Please enter both username and password");
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/login`, {
-        username: credentials.username,
-        password: credentials.password,
-        role: selectedRole.toLowerCase(),
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        {
+          username: credentials.username,
+          password: credentials.password,
+          role: selectedRole.toLowerCase(),
+        }
+      );
 
       localStorage.setItem("token", response.data.token);
       setError(null);
@@ -102,15 +117,17 @@ const LoginPage = () => {
 
   return (
     <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center px-4"
+      className="flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat px-4 sm:px-6"
       style={{
         backgroundImage:
           "url('https://media.getmyuni.com/azure/college-images-test/nanasaheb-mahadik-college-of-engineering-nmce-sangli/2079edd702dc4d77a028f45677854a84.jpeg')",
       }}
     >
-      <div className="w-full max-w-md p-6 space-y-6 bg-white/20 backdrop-blur-md rounded-xl shadow-2xl animate-slide-in-up">
-        <h2 className="text-3xl font-bold text-center text-gray-800">Project Report Submission System</h2>
-        <p className="text-center text-gray-900">Select your role to log in</p>
+      <div className="absolute inset-0 bg-black/40 z-0" />
+
+      <div className="w-full max-w-md p-6 space-y-6 bg-white/20 backdrop-blur-md rounded-xl shadow-2xl animate-slide-in-up relative z-10">
+        <h2 className="text-3xl font-bold text-center text-white drop-shadow">Project Report Submission System</h2>
+        <p className="text-center text-white/90">Select your role to log in</p>
 
         {/* Role buttons with icons and tooltips */}
         <div className="flex justify-between gap-3">
@@ -137,7 +154,7 @@ const LoginPage = () => {
 
         {selectedRole && (
           <div className="pt-4 animate-fade-in">
-            <h3 className="text-xl font-semibold text-center text-indigo-600">{selectedRole} Login</h3>
+            <h3 className="text-xl font-semibold text-center text-white drop-shadow">{selectedRole} Login</h3>
             {renderLoginForm()}
           </div>
         )}

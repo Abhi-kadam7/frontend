@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import {
+  FaUserGraduate,
+  FaTrashAlt,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaHourglassHalf,
+  FaUpload
+} from 'react-icons/fa';
 
 const DashboardPage = () => {
   const [projectTitle, setProjectTitle] = useState('');
@@ -100,17 +108,21 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100">
+    <div className="p-4 sm:p-6 bg-gradient-to-br from-indigo-100 via-white to-blue-100 min-h-screen">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-extrabold text-indigo-700">Submit Project Report</h2>
-        <p className="text-sm text-gray-700 font-medium bg-white px-3 py-1 rounded-full shadow">
-          👤 {studentName}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-2">
+        <h2 className="text-2xl sm:text-3xl font-bold text-indigo-700 flex items-center gap-2">
+          <FaUpload title="Upload" className="text-indigo-600" />
+          Submit Project Report
+        </h2>
+        <p className="flex items-center text-sm sm:text-base text-gray-700 font-medium bg-white px-3 py-1 rounded-full shadow">
+          <FaUserGraduate className="mr-2" title="Student" />
+          {studentName}
         </p>
       </div>
 
       {/* Form */}
-      <div className="bg-white p-6 rounded-xl shadow-md space-y-4 mb-10">
+      <div className="bg-white p-5 sm:p-6 rounded-xl shadow-md space-y-4 mb-10">
         <input
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           placeholder="Enter Project Title"
@@ -129,31 +141,35 @@ const DashboardPage = () => {
 
         <button
           onClick={handleSubmit}
-          className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 disabled:opacity-50"
+          className="w-full sm:w-auto bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2"
           disabled={loading}
         >
-          {loading ? 'Submitting...' : '📤 Submit Report'}
+          {loading ? 'Submitting...' : (
+            <>
+              <FaUpload /> Submit Report
+            </>
+          )}
         </button>
       </div>
 
-      {/* Submissions */}
+      {/* Submitted Reports */}
       <div>
-        <h3 className="text-2xl font-semibold text-gray-800 mb-4">📑 My Submissions</h3>
+        <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">📑 My Submissions</h3>
 
         {submittedReports.length > 0 ? (
           <ul className="space-y-4">
             {submittedReports.map((r) => (
               <li
                 key={r._id}
-                className="p-5 bg-white rounded-xl shadow-sm border border-gray-200 flex justify-between items-start hover:shadow-md transition"
+                className="p-5 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
               >
-                <div>
+                <div className="space-y-1">
                   <p className="text-lg font-bold text-indigo-700">{r.projectTitle}</p>
                   <p className="text-sm text-gray-600">
                     Submitted on: {new Date(r.submissionDate).toLocaleDateString('en-IN')}
                   </p>
                   <p
-                    className={`text-sm font-medium mt-1 ${
+                    className={`text-sm font-medium flex items-center gap-1 ${
                       r.isApproved
                         ? 'text-green-600'
                         : r.rejected
@@ -161,18 +177,26 @@ const DashboardPage = () => {
                         : 'text-yellow-600'
                     }`}
                   >
-                    {r.isApproved
-                      ? '✅ Approved'
-                      : r.rejected
-                      ? `❌ Rejected: ${r.rejectionReason}`
-                      : '⏳ Pending Approval'}
+                    {r.isApproved ? (
+                      <>
+                        <FaCheckCircle /> Approved
+                      </>
+                    ) : r.rejected ? (
+                      <>
+                        <FaTimesCircle /> Rejected: {r.rejectionReason}
+                      </>
+                    ) : (
+                      <>
+                        <FaHourglassHalf /> Pending Approval
+                      </>
+                    )}
                   </p>
                 </div>
                 <button
                   onClick={() => handleDelete(r._id)}
-                  className="bg-red-500 text-white px-4 py-1.5 rounded hover:bg-red-700 transition"
+                  className="bg-red-500 text-white px-4 py-1.5 rounded hover:bg-red-700 transition flex items-center gap-2"
                 >
-                  Delete
+                  <FaTrashAlt /> Delete
                 </button>
               </li>
             ))}

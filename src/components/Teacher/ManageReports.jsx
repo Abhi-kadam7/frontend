@@ -9,13 +9,12 @@ const ManageReports = () => {
   const token = localStorage.getItem('token');
   const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch all reports
   const fetchReports = async () => {
     try {
       const response = await axios.get(`${API_BASE}/reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSubmittedReports(response.data);
+      setSubmittedReports(response.data || []);
       setError('');
     } catch (err) {
       console.error('Fetch error:', err);
@@ -34,7 +33,7 @@ const ManageReports = () => {
       await axios.put(`${API_BASE}/reports/${id}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      alert('✅ Report approved successfully!');
+      alert('✅ Report approved!');
       fetchReports();
     } catch (err) {
       console.error('Approve error:', err);
@@ -43,14 +42,14 @@ const ManageReports = () => {
   };
 
   const handleRejectReport = async (id) => {
-    const reason = window.prompt('Enter the reason for rejecting this report:');
+    const reason = window.prompt('Enter rejection reason:');
     if (!reason) return;
 
     try {
       await axios.put(`${API_BASE}/reports/${id}/reject`, { reason }, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      alert('⚠️ Report rejected and student notified.');
+      alert('⚠️ Report rejected.');
       fetchReports();
     } catch (err) {
       console.error('Reject error:', err);
@@ -59,7 +58,7 @@ const ManageReports = () => {
   };
 
   const handleDeleteReport = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this report?')) return;
+    if (!window.confirm('Delete this report?')) return;
 
     try {
       await axios.delete(`${API_BASE}/reports/${id}`, {
@@ -83,17 +82,16 @@ const ManageReports = () => {
       const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'Project_Completion_Certificate.pdf');
+      link.setAttribute('download', 'Certificate.pdf');
       document.body.appendChild(link);
       link.click();
       link.remove();
 
-      alert('🎓 Certificate generated and sent to student.');
+      alert('🎓 Certificate generated!');
       fetchReports();
     } catch (err) {
-      console.error('Certificate generation error:', err);
-      const message = err.response?.data?.message || '❌ Error generating certificate.';
-      setError(message);
+      console.error('Certificate error:', err);
+      setError('❌ Error generating certificate.');
     }
   };
 
@@ -104,118 +102,117 @@ const ManageReports = () => {
   );
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <header className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">Teacher Dashboard</h2>
-        <p className="text-gray-600 mt-1">Manage and approve submitted project reports.</p>
+    <div className="p-4 sm:p-6 bg-gray-100 min-h-screen">
+      {/* Header */}
+      <header className="mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">📋 Manage Reports</h2>
+        <p className="text-gray-600 mt-1">Review, approve, reject or delete student submissions.</p>
       </header>
 
       {/* Filters */}
-      <section className="p-6 bg-white rounded-lg shadow mb-8">
-        <div className="flex flex-wrap gap-4">
-          <input
-            type="text"
-            placeholder="Search by student name or project title"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="border p-3 rounded w-full md:w-1/2 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-          />
-          <select
-            onChange={(e) =>
-              setFilterApproved(e.target.value === 'all' ? null : e.target.value === 'approved')
-            }
-            className="border p-3 rounded focus:outline-none focus:ring-2 focus:ring-indigo-600"
-          >
-            <option value="all">All Reports</option>
-            <option value="approved">Approved</option>
-            <option value="not-approved">Not Approved</option>
-          </select>
-        </div>
-      </section>
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6 space-y-4">
+        <input
+          type="text"
+          placeholder="Search by name or title"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+        <select
+          onChange={(e) =>
+            setFilterApproved(e.target.value === 'all' ? null : e.target.value === 'approved')
+          }
+          className="w-full sm:w-60 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+          <option value="all">All Reports</option>
+          <option value="approved">Approved</option>
+          <option value="not-approved">Not Approved</option>
+        </select>
+      </div>
 
-      {/* Reports List */}
+      {/* Reports */}
       {filteredReports.length > 0 ? (
-        <section className="p-6 bg-white rounded-lg shadow">
-          <h3 className="text-xl font-semibold mb-4">Submitted Reports</h3>
-          <ul className="space-y-4">
-            {filteredReports.map((report) => (
-              <li
-                key={report._id}
-                className="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4"
-              >
-                <div className="text-gray-700">
-                  <p className="font-semibold">{report.studentName} - {report.projectTitle}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(report.submissionDate).toLocaleDateString()} | {report.studentEmail}
-                  </p>
-                  <p className={`text-sm font-bold mt-1 ${
-                    report.isApproved ? 'text-green-600' :
-                    report.rejected ? 'text-red-600' : 'text-yellow-600'
-                  }`}>
-                    {report.isApproved
-                      ? '✅ Approved'
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 space-y-6">
+          {filteredReports.map((report) => (
+            <div
+              key={report._id}
+              className="border-b pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            >
+              <div>
+                <p className="font-bold text-indigo-700">{report.studentName}</p>
+                <p className="text-sm text-gray-700">{report.projectTitle}</p>
+                <p className="text-xs text-gray-500">{new Date(report.submissionDate).toLocaleDateString()}</p>
+                <p
+                  className={`text-sm font-semibold mt-1 ${
+                    report.isApproved
+                      ? 'text-green-600'
                       : report.rejected
-                      ? `❌ Rejected: ${report.rejectionReason}`
-                      : '⏳ Pending Approval'}
-                  </p>
-                </div>
+                      ? 'text-red-600'
+                      : 'text-yellow-600'
+                  }`}
+                >
+                  {report.isApproved
+                    ? '✅ Approved'
+                    : report.rejected
+                    ? `❌ Rejected: ${report.rejectionReason}`
+                    : '⏳ Pending'}
+                </p>
+              </div>
 
-                <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-                  <a
-                    href={`${API_BASE}/reports/${report._id}/pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600"
-                  >
-                    View Report
-                  </a>
+              <div className="flex flex-wrap gap-2 sm:justify-end">
+                <a
+                  href={`${API_BASE}/reports/${report._id}/pdf`}
+                  target="_blank"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-3 py-1 rounded"
+                >
+                  View
+                </a>
 
-                  {!report.isApproved && !report.rejected && (
-                    <>
-                      <button
-                        onClick={() => handleApproveReport(report._id)}
-                        className="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleRejectReport(report._id)}
-                        className="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700"
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )}
-
-                  {report.isApproved && !report.certificateGenerated && (
+                {!report.isApproved && !report.rejected && (
+                  <>
                     <button
-                      onClick={() => handleGenerateCertificate(report._id)}
-                      className="bg-indigo-600 text-white py-1 px-3 rounded hover:bg-indigo-700"
+                      onClick={() => handleApproveReport(report._id)}
+                      className="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1 rounded"
                     >
-                      Generate Certificate
+                      Approve
                     </button>
-                  )}
+                    <button
+                      onClick={() => handleRejectReport(report._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white text-sm px-3 py-1 rounded"
+                    >
+                      Reject
+                    </button>
+                  </>
+                )}
 
-                  {report.certificateGenerated && (
-                    <p className="text-green-700 font-semibold">🎓 Certificate Generated</p>
-                  )}
-
+                {report.isApproved && !report.certificateGenerated && (
                   <button
-                    onClick={() => handleDeleteReport(report._id)}
-                    className="bg-gray-600 text-white py-1 px-3 rounded hover:bg-gray-700"
+                    onClick={() => handleGenerateCertificate(report._id)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-1 rounded"
                   >
-                    Delete
+                    Generate Certificate
                   </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
+                )}
+
+                {report.certificateGenerated && (
+                  <span className="text-green-700 font-semibold text-sm">🎓 Certificate Generated</span>
+                )}
+
+                <button
+                  onClick={() => handleDeleteReport(report._id)}
+                  className="bg-gray-600 hover:bg-gray-700 text-white text-sm px-3 py-1 rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
-        <p className="text-gray-600">No reports found.</p>
+        <p className="text-gray-600 text-center mt-8">No reports found.</p>
       )}
 
-      {error && <p className="text-red-600 mt-6 font-medium">{error}</p>}
+      {error && <p className="text-red-600 text-center mt-6 font-medium">{error}</p>}
     </div>
   );
 };
