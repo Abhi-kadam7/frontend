@@ -32,14 +32,13 @@ const DashboardPage = () => {
   });
 
   const fetchStats = async () => {
-  try {
-    const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/dashboard/stats`);
-    setStats(res.data);
-  } catch (err) {
-    console.error('Error fetching dashboard stats:', err);
-  }
-};
-
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/dashboard/stats`);
+      setStats(res.data);
+    } catch (err) {
+      console.error('Error fetching dashboard stats:', err);
+    }
+  };
 
   useEffect(() => {
     fetchStats();
@@ -75,46 +74,87 @@ const DashboardPage = () => {
     ],
   };
 
-  const options = {
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
+    animation: {
+      duration: 1000,
+      easing: 'easeOutQuart',
+    },
+    interaction: {
+      mode: 'nearest',
+      axis: 'x',
+      intersect: false,
+    },
     plugins: {
       legend: {
         position: 'top',
         labels: {
-          font: { size: 14, weight: 'bold' },
-          color: '#333',
+          font: { size: 13 },
+          color: '#1e293b',
+          usePointStyle: true,
+          padding: 20,
         },
       },
-      title: {
-        display: true,
-        text: 'Monthly Report & Approval Trends',
-        font: { size: 18, weight: 'bold' },
-        color: '#1f2937',
+      tooltip: {
+        backgroundColor: '#f8fafc',
+        titleColor: '#111827',
+        bodyColor: '#1f2937',
+        borderColor: '#e2e8f0',
+        borderWidth: 1,
+        padding: 12,
+        titleFont: { size: 14, weight: 'bold' },
+        bodyFont: { size: 13 },
+        displayColors: true,
+        usePointStyle: true,
       },
     },
     scales: {
       x: {
-        title: { display: true, text: 'Month' },
-        ticks: { font: { size: 12 } },
+        grid: {
+          color: '#e5e7eb',
+          borderDash: [4, 4],
+        },
+        ticks: {
+          font: { size: 12 },
+          color: '#4b5563',
+        },
+        title: {
+          display: true,
+          text: 'Month',
+          font: { size: 14, weight: '600' },
+          color: '#374151',
+        },
       },
       y: {
         beginAtZero: true,
-        title: { display: true, text: 'Number of Reports' },
-        ticks: { stepSize: 1 },
+        grid: {
+          color: '#e5e7eb',
+          borderDash: [4, 4],
+        },
+        ticks: {
+          stepSize: 1,
+          font: { size: 12 },
+          color: '#4b5563',
+        },
+        title: {
+          display: true,
+          text: 'Reports Count',
+          font: { size: 14, weight: '600' },
+          color: '#374151',
+        },
       },
     },
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gradient-to-br from-indigo-100 via-sky-50 to-blue-100 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 min-h-screen bg-gradient-to-br from-indigo-100 via-sky-50 to-blue-100 animate-fade-in">
       {/* Header */}
       <header className="mb-10 text-center">
-        <h2 className="text-4xl font-extrabold text-indigo-700 tracking-tight drop-shadow-md">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-indigo-700 tracking-tight drop-shadow-md">
           🧑‍💼 Admin Dashboard
         </h2>
-        <p className="text-gray-600 text-lg mt-2">System insights and real-time reporting overview</p>
+        <p className="text-gray-600 text-sm sm:text-lg mt-2">Real-time system insights</p>
       </header>
 
       {/* Stats Cards */}
@@ -125,10 +165,14 @@ const DashboardPage = () => {
         <StatCard title="🕒 Pending Approvals" value={stats.pendingApprovals} bg="bg-red-100" text="text-red-700" />
       </section>
 
-      {/* Chart Section */}
-      <section className="bg-white/80 backdrop-blur-lg p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 ease-in-out" style={{ height: '440px' }}>
-        <h3 className="text-2xl font-semibold text-indigo-800 mb-4">📈 Report Trends (Real-Time)</h3>
-        <Line data={userStatsData} options={options} />
+      {/* Chart */}
+      <section className="bg-white/90 backdrop-blur-lg p-4 sm:p-6 rounded-2xl shadow-xl transition-all duration-300 ease-in-out">
+        <h3 className="text-lg sm:text-xl font-semibold text-indigo-800 mb-4 text-center">
+          📈 Monthly Report & Approval Trends
+        </h3>
+        <div className="relative w-full h-[320px] sm:h-[400px] md:h-[450px]">
+          <Line data={userStatsData} options={chartOptions} />
+        </div>
       </section>
     </div>
   );
@@ -137,10 +181,10 @@ const DashboardPage = () => {
 // Stat Card Component
 const StatCard = ({ title, value, bg, text }) => (
   <div
-    className={`rounded-xl p-6 shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ${bg} ${text}`}
+    className={`rounded-xl p-5 shadow-md hover:shadow-xl transform hover:scale-105 transition duration-300 ${bg} ${text}`}
   >
-    <h3 className="text-md font-semibold">{title}</h3>
-    <p className="text-4xl font-bold mt-2">{value}</p>
+    <h3 className="text-sm sm:text-md font-semibold">{title}</h3>
+    <p className="text-3xl sm:text-4xl font-bold mt-2">{value}</p>
   </div>
 );
 
