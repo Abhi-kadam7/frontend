@@ -11,6 +11,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem('token');
+  const API_BASE = import.meta.env.VITE_API_BASE_URL; // should be like: https://backend-xxxxx.onrender.com/api/reports
 
   useEffect(() => {
     if (token) {
@@ -26,7 +27,7 @@ const DashboardPage = () => {
 
   const fetchReports = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/my-reports`, {
+      const res = await axios.get(`${API_BASE}/my-reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSubmittedReports(res.data || []);
@@ -62,7 +63,7 @@ const DashboardPage = () => {
     form.append('report', reportFile);
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/submit-report`, form, {
+      await axios.post(`${API_BASE}/submit-report`, form, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -87,7 +88,7 @@ const DashboardPage = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/reports/${id}`, {
+      await axios.delete(`${API_BASE}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('🗑 Report deleted successfully!');
@@ -104,7 +105,7 @@ const DashboardPage = () => {
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-extrabold text-indigo-700">Submit Project Report</h2>
         <p className="text-sm text-gray-700 font-medium bg-white px-3 py-1 rounded-full shadow">
-          👤 {studentName || 'Student'}
+          👤 {studentName}
         </p>
       </div>
 
@@ -153,10 +154,14 @@ const DashboardPage = () => {
                   </p>
                   <p
                     className={`text-sm font-medium mt-1 ${
-                      r.isApproved ? 'text-green-600' : 'text-yellow-600'
+                      r.isApproved ? 'text-green-600' : r.rejected ? 'text-red-600' : 'text-yellow-600'
                     }`}
                   >
-                    {r.isApproved ? '✅ Approved' : '⏳ Pending Approval'}
+                    {r.isApproved
+                      ? '✅ Approved'
+                      : r.rejected
+                      ? `❌ Rejected: ${r.rejectionReason}`
+                      : '⏳ Pending Approval'}
                   </p>
                 </div>
                 <button
