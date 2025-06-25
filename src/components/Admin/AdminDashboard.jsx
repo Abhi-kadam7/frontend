@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes, FaTachometerAlt, FaUsersCog, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
+import {
+  FaBars,
+  FaTimes,
+  FaTachometerAlt,
+  FaUsersCog,
+  FaFileAlt,
+  FaSignOutAlt,
+} from 'react-icons/fa';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -10,17 +17,13 @@ const AdminDashboard = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleLogout = () => {
-    const funnyMessages = [
-      "Are you sure you want to abandon your admin powers? 🦸‍♂️",
-      "Logging out? But we were just getting started! 😢",
-      "Wait! Don’t leave me alone with the bugs! 🐛",
-      "Goodbye, mighty admin. The system shall miss your rule. 👑",
-      "Don't go! The users are behaving... for now. 😬",
+    const messages = [
+      'Are you sure you want to abandon your admin powers? 🦸‍♂️',
+      'Logging out? But we were just getting started! 😢',
+      'Wait! Don’t leave me alone with the bugs! 🐛',
+      'Goodbye, mighty admin. The system shall miss your rule. 👑',
     ];
-    const randomMessage = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
-    const isConfirmed = window.confirm(randomMessage);
-
-    if (isConfirmed) {
+    if (window.confirm(messages[Math.floor(Math.random() * messages.length)])) {
       localStorage.removeItem('token');
       navigate('/', { replace: true });
     }
@@ -35,72 +38,71 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden font-sans bg-gray-100 relative">
-      {/* Mobile sidebar overlay */}
+    <div className="flex h-screen bg-gray-100 overflow-hidden">
+      {/* Sidebar Overlay on Mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-30 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
           onClick={toggleSidebar}
         ></div>
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed z-40 lg:static top-0 left-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-700 text-white p-6 flex flex-col transform transition-transform duration-300 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed top-0 left-0 z-40 w-64 h-full bg-gradient-to-b from-gray-900 to-gray-700 text-white transform transition-transform duration-300 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 lg:static lg:z-auto`}
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-extrabold tracking-tight">Admin Panel</h2>
-          <button className="text-white lg:hidden" onClick={toggleSidebar}>
-            <FaTimes size={22} />
+        <div className="p-6 flex flex-col h-full">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold tracking-tight">Admin Panel</h2>
+            <button className="lg:hidden" onClick={toggleSidebar}>
+              <FaTimes />
+            </button>
+          </div>
+
+          <nav className="flex-grow space-y-3">
+            {navItems.map(({ to, label, icon }) => (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
+                  isActive(to)
+                    ? 'bg-indigo-600 text-white shadow'
+                    : 'hover:bg-gray-600'
+                }`}
+              >
+                <span className="text-lg">{icon}</span>
+                <span>{label}</span>
+              </Link>
+            ))}
+          </nav>
+
+          <button
+            onClick={handleLogout}
+            className="mt-8 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg"
+          >
+            <FaSignOutAlt />
+            Logout
           </button>
         </div>
-
-        <nav className="flex-grow">
-          <ul className="space-y-4">
-            {navItems.map(({ to, label, icon }) => (
-              <li key={to}>
-                <Link
-                  to={to}
-                  onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
-                    isActive(to)
-                      ? 'bg-indigo-600 text-white shadow'
-                      : 'hover:bg-gray-600 hover:shadow-md'
-                  }`}
-                >
-                  <span className="text-lg">{icon}</span>
-                  <span className="font-medium">{label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <button
-          className="mt-10 flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg transition-transform transform hover:scale-105 shadow"
-          onClick={handleLogout}
-        >
-          <FaSignOutAlt />
-          Logout
-        </button>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex flex-col flex-grow h-full">
-        {/* Top Bar (mobile toggle) */}
-        <header className="flex items-center justify-between px-4 py-3 bg-white shadow lg:hidden sticky top-0 z-20">
-          <button onClick={toggleSidebar} className="text-gray-800">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* Top Navbar for mobile */}
+        <header className="lg:hidden bg-white shadow px-4 py-3 flex justify-between items-center sticky top-0 z-20">
+          <button onClick={toggleSidebar}>
             <FaBars size={22} />
           </button>
-          <h1 className="text-xl font-bold text-gray-800">Admin Dashboard</h1>
+          <h1 className="text-lg font-bold text-gray-800">Admin Dashboard</h1>
           <div></div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-grow overflow-y-auto p-4 lg:p-8">
-          <div className="bg-white shadow-md rounded-lg p-6">
+        {/* Main Page Content */}
+        <main className="flex-1 overflow-y-auto p-4 lg:p-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
             <Outlet />
           </div>
         </main>
