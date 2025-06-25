@@ -11,7 +11,7 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem('token');
-  const API_BASE = import.meta.env.VITE_API_BASE_URL; // should be like: https://backend-xxxxx.onrender.com/api/reports
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if (token) {
@@ -27,7 +27,7 @@ const DashboardPage = () => {
 
   const fetchReports = async () => {
     try {
-     const res = await axios.get(`${API_BASE}/reports/my-reports`, {
+      const res = await axios.get(`${API_BASE}/reports/my-reports`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSubmittedReports(res.data || []);
@@ -63,7 +63,7 @@ const DashboardPage = () => {
     form.append('report', reportFile);
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/reports/submit-report`, form, {
+      await axios.post(`${API_BASE}/reports/submit-report`, form, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -88,7 +88,7 @@ const DashboardPage = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`${API_BASE}/${id}`, {
+      await axios.delete(`${API_BASE}/reports/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('🗑 Report deleted successfully!');
@@ -154,7 +154,11 @@ const DashboardPage = () => {
                   </p>
                   <p
                     className={`text-sm font-medium mt-1 ${
-                      r.isApproved ? 'text-green-600' : r.rejected ? 'text-red-600' : 'text-yellow-600'
+                      r.isApproved
+                        ? 'text-green-600'
+                        : r.rejected
+                        ? 'text-red-600'
+                        : 'text-yellow-600'
                     }`}
                   >
                     {r.isApproved
