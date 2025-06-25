@@ -31,7 +31,6 @@ const LoginPage = () => {
       localStorage.setItem('token', response.data.token);
       setError(null);
 
-      // Redirect to dashboard
       switch (selectedRole) {
         case 'Admin':
           navigate('/admin');
@@ -53,14 +52,14 @@ const LoginPage = () => {
   };
 
   const renderLoginForm = () => (
-    <form onSubmit={handleLogin} className="space-y-4 animate-fade-in">
+    <form onSubmit={handleLogin} className="space-y-4 animate-fade-in w-full">
       <input
         type="text"
         name="username"
         placeholder={`${selectedRole} Username`}
         value={credentials.username}
         onChange={handleChange}
-        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
       />
       <input
         type="password"
@@ -68,7 +67,7 @@ const LoginPage = () => {
         placeholder="Password"
         value={credentials.password}
         onChange={handleChange}
-        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm"
       />
       <button
         type="submit"
@@ -81,20 +80,25 @@ const LoginPage = () => {
   );
 
   return (
-<div
-  className="flex items-center justify-center min-h-screen bg-cover bg-center px-4"
-  style={{
-    backgroundImage: "url('https://media.getmyuni.com/azure/college-images-test/nanasaheb-mahadik-college-of-engineering-nmce-sangli/2079edd702dc4d77a028f45677854a84.jpeg')"}}>
-      <div className="w-full max-w-md p-8 space-y-6 bg-white/10 backdrop-blur-md rounded-xl shadow-2xl animate-slide-in-up">
-        <h2 className="text-3xl font-bold text-center text-gray-800">Project Report Submission System</h2>
-        <p className="text-center text-gray-900">Select your role to log in</p>
+    <div
+      className="flex items-center justify-center min-h-screen px-4 py-8 bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "url('https://media.getmyuni.com/azure/college-images-test/nanasaheb-mahadik-college-of-engineering-nmce-sangli/2079edd702dc4d77a028f45677854a84.jpeg')",
+      }}
+    >
+      <div className="w-full max-w-md p-8 space-y-6 bg-white/20 backdrop-blur-lg rounded-xl shadow-xl animate-slide-in-up">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-900 drop-shadow-md">Project Report Submission</h2>
+          <p className="text-gray-800 text-sm mt-1">Select your role to log in</p>
+        </div>
 
         <div className="flex justify-between gap-3">
           {['Admin', 'Student', 'Teacher'].map((role) => (
             <button
               key={role}
               onClick={() => setSelectedRole(role)}
-              className={`flex-1 px-4 py-2 font-semibold text-white rounded-full transition-all duration-300 ${
+              className={`flex-1 px-4 py-2 font-semibold text-white rounded-full transition-all duration-300 shadow ${
                 selectedRole === role
                   ? 'bg-indigo-700 scale-105'
                   : role === 'Student'
@@ -110,7 +114,7 @@ const LoginPage = () => {
         </div>
 
         {selectedRole && (
-          <div className="pt-4 animate-fade-in">
+          <div className="pt-4 animate-fade-in w-full">
             <h3 className="text-xl font-semibold text-center text-indigo-600">{selectedRole} Login</h3>
             {renderLoginForm()}
           </div>
